@@ -1,0 +1,7 @@
+{
+  "name": "batch-cep",
+  "version": "0.1.0",
+  "description": "Orchestre Batch.com (CEP + MEP) en langage naturel. 60 commandes wrapping l'API Batch via fetch direct : profils, audiences, campagnes omnichannel, catalogues, transactional, in-app, custom data, GDPR, exports.",
+  "author": { "name": "Alexandre Bouchez" },
+  "skills": "./skills/"
+}
