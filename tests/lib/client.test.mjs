@@ -1,3 +1,6 @@
+// Copyright (C) 2026 Drivenlabs — Alexandre Bouchez
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ClientError, cepFetch, mepFetch } from "../../skills/batch-cep/lib/client.mjs";
 import { mockFetch } from "../helpers.mjs";
