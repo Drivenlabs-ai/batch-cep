@@ -2,6 +2,22 @@
 
 Send 1-to-1 push notifications triggered by user actions. Use for order confirmations, password resets, new message alerts, and any notification that fires in response to something a user did—not mass campaigns.
 
+## Platform isolation
+
+Each MEP `--app-key` targets ONE platform. To send to iOS only, pass `--app-key ios_live`. To send to Android only, pass `--app-key android_live`. To send to web only, pass `--app-key web`.
+
+Example — welcome push to a new iOS user only:
+
+```bash
+$batch-cep transactional send '{
+  "group_id": "welcome_ios",
+  "recipients": { "custom_ids": ["u_xyz"] },
+  "message": { "title": "Bienvenue !", "body": "Ton compte est prêt." }
+}' --app-key ios_live
+```
+
+If the user is also on Android, this call will NOT reach their Android device. To cover both, repeat the call with `--app-key android_live`. See `examples/cross-platform-fanout.md` for a full walkthrough.
+
 ## Commands
 
 ### `$batch-cep transactional send <payload-json>`

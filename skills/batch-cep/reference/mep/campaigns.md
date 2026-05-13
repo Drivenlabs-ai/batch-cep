@@ -20,10 +20,20 @@ Create a new mass push campaign.
 - `name` (string, 1-255 chars, required): Human-readable campaign name.
 - `state` (enum, required): `"DRAFT"` (paused) or `"RUNNING"` (launches immediately).
 - `send_rate` (int, optional): Sends per second (default: unlimited).
-- `when` (object, required): Scheduling. Keys: `once_at` (ISO 8601 timestamp), `between` (time window), `local_between` (user's local time).
+- `when` (object, required): Scheduling. Keys: `start_time` (RFC 3339 string, or `"now"` to launch immediately), `end_time` (RFC 3339 string, optional), `between` (time window), `local_between` (user's local time). Use `start_time: "now"` combined with `state: "RUNNING"` to trigger immediately.
 - `targeting` (object, optional): Segmentation criteria (segments, cohorts, custom audiences). Pass-through to Batch schema.
 - `labels` (array, optional): Up to 3 frequency-capping labels.
-- `messages` (array, required): Push message definitions (channel, title, body, media, etc.).
+- `messages` (array, required): Push message definitions (channel, title, body, media, deeplink, etc.).
+
+### Channels.push fields (relevant subset)
+
+| Field | Type | Description |
+|---|---|---|
+| `title` | string | Push title (typically <50 chars) |
+| `body` | string | Push body (required) |
+| `deeplink` | string | URL or app deeplink to open on tap (e.g., `myapp://product/123`) |
+| `media` | object | Optional icon/picture/audio/video URLs |
+| `priority` | enum | `normal` or `high` (iOS default high, Android default normal) |
 
 **Output**
 
@@ -47,7 +57,7 @@ Create a new mass push campaign.
 $batch-cep campaigns create '{
   "name": "Flash Sale - 24h",
   "state": "DRAFT",
-  "when": { "once_at": "2026-05-14T10:00:00Z" },
+  "when": { "start_time": "2026-05-14T10:00:00Z" },
   "targeting": { "segments": ["ENGAGED"] },
   "messages": [ { "channel": "push", "title": "Flash Sale!", "body": "50% off for 24h" } ]
 }' --app-key ios-live
@@ -197,7 +207,7 @@ Retrieve full campaign details.
       "campaign_token": "tok_xyz789",
       "name": "Flash Sale Extended - 48h",
       "state": "RUNNING",
-      "when": { "once_at": "2026-05-14T10:00:00Z" },
+      "when": { "start_time": "2026-05-14T10:00:00Z" },
       "targeting": { "segments": ["ENGAGED"] },
       "messages": [ { "channel": "push", "title": "Flash Sale!", "body": "50% off for 48h" } ]
     }

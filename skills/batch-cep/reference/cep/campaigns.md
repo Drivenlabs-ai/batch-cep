@@ -209,8 +209,40 @@ $batch-cep campaigns delete "cmp_xyz789" --confirm
 
 ---
 
+## Targeting custom audiences
+
+To target a campaign at a pre-defined custom audience (created via `audiences create`), pass the audience NAME (not the indexing_token) in the targeting object:
+
+```json
+"targeting": {
+  "audiences": ["premium_users", "q2_winback_segment"]
+}
+```
+
+Audiences must be in `status: ready` (indexing complete) before being usable in a campaign. Check via `audiences view <name>`.
+
+You can combine audience targeting with criteria-based targeting (events, attributes) in the same `targeting` object.
+
+See `examples/ab-test-campaign.md` for a pattern targeting two non-overlapping audiences for A/B testing.
+
+## Personalization with attributes
+
+Batch supports liquid-style templating in push and email bodies, referencing the user's profile attributes:
+
+```json
+"channels": {
+  "push": {
+    "title": "Bonjour {{custom_attributes.first_name}}",
+    "body": "Tu as {{custom_attributes.points}} points fidélité"
+  }
+}
+```
+
+The exact syntax for attribute references depends on Batch's templating engine — consult Batch dashboard or developer docs for the full template language. The plugin passes message bodies through verbatim, so templating is server-side at send time.
+
 ## See also
 
 - [overview](../overview.md) — CEP campaigns vs MEP campaigns
+- [audiences](audiences.md) — creating and managing custom audiences
 - [rate-limits](../rate-limits.md) — campaign creation rate limits
 - [errors](../errors.md) — troubleshooting 400/401/404 errors

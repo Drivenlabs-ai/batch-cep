@@ -191,6 +191,21 @@ $batch-cep profiles export "attributes,events" '{"segment":"premium_users"}'
 
 ---
 
+## Event date-range filter for exports
+
+When using `$batch-cep profiles export "events"` to export event history (e.g., for an annual GDPR audit), you can filter by date range via the `filter-json` arg:
+
+```bash
+$batch-cep profiles export "events" '{
+  "events": {
+    "after": "2025-05-13T00:00:00Z",
+    "before": "2026-05-13T00:00:00Z"
+  }
+}'
+```
+
+The exact filter shape is determined by Batch's export API — the plugin passes the filter through verbatim. Consult Batch developer docs for the full filter schema (segment filtering, attribute filtering, etc.).
+
 ## See also
 
 - [overview](../overview.md) — when to use CEP vs MEP

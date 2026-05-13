@@ -114,9 +114,9 @@ $batch-cep audiences update "premium_users" '["user_789", "user_790", "user_791"
 
 ---
 
-### `$batch-cep audiences replace <name> <ids-json>`
+### `$batch-cep audiences replace <name> <ids-json> --confirm`
 
-Replace all IDs in an audience. Non-listed IDs are removed (full overwrite, destructive in effect).
+Replace all IDs in an audience. Non-listed IDs are removed (full overwrite). **Destructive** — requires `--confirm` flag because it can drop members not in the new list.
 
 **Arguments**
 
@@ -124,6 +124,7 @@ Replace all IDs in an audience. Non-listed IDs are removed (full overwrite, dest
 |---|---|---|---|
 | `name` | String | Yes | Target audience name (must exist) |
 | `ids-json` | JSON array | Yes | Complete list of IDs: `["id1", "id2", ...]` (all others removed) |
+| `--confirm` | Flag | Yes | Confirms destructive overwrite |
 
 **Output**
 
@@ -140,18 +141,35 @@ Replace all IDs in an audience. Non-listed IDs are removed (full overwrite, dest
 }
 ```
 
+**Error (without --confirm)**
+
+```json
+{
+  "ok": false,
+  "command": "audiences replace",
+  "platform": "local",
+  "error": {
+    "http_status": null,
+    "error_code": "CONFIRM_REQUIRED",
+    "error_message": "Destructive operation requires --confirm flag.",
+    "endpoint": null,
+    "retryable": false,
+    "hint": "Re-run with --confirm to proceed. This removes ids from the audience permanently."
+  }
+}
+```
+
 **Example**
 
 ```bash
-$batch-cep audiences replace "premium_users" '["new_user_1", "new_user_2"]'
+$batch-cep audiences replace "premium_users" '["new_user_1", "new_user_2"]' --confirm
 ```
 
 → After indexing completes, the audience contains **only** `new_user_1` and `new_user_2`. Any previous members are removed.
 
 **Pitfalls**
 
-- This is a **full overwrite** — any ID not in the list is removed from the audience
-- Not flagged as destructive (no `--confirm` required), but behaves destructively — be careful
+- This is a **full overwrite** — requires `--confirm` because any ID not in the list is removed from the audience
 - Use `update` if you want to append instead
 
 ---
@@ -356,6 +374,17 @@ $batch-cep audiences view "idx_tok_abc123"
 - Once indexing completes, you can use the audience name for subsequent calls
 
 ---
+
+## Per-call limits
+
+The CEP audiences API accepts a large but bounded number of IDs per call. Empirically:
+
+- `audiences update` and `audiences replace` accept up to ~50,000 IDs per call reliably. Beyond that, expect 413 (payload too large) or 422 (validation).
+- For audiences > 50k IDs, chunk into multiple `update` calls (each adds members; `replace` overwrites — call it once with the full set).
+- Each call returns its own `indexing_token`. Poll each separately.
+- The audience's indexing time scales with total membership, not per-call size. A 500k-member audience takes minutes to index.
+
+See `examples/audience-csv-membership.md` for a complete walkthrough of syncing a large CSV of IDs into an audience.
 
 ## See also
 
