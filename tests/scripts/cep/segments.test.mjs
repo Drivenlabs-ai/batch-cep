@@ -1,11 +1,11 @@
 // Copyright (C) 2026 Drivenlabs — Alexandre Bouchez
 // SPDX-License-Identifier: AGPL-3.0-only
 
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { writeFileSync, mkdtempSync, rmSync } from "node:fs";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { mockFetch, captureOutput, fakeCredentials } from "../../helpers.mjs";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { captureOutput, fakeCredentials, mockFetch } from "../../helpers.mjs";
 
 const ORIGINAL_FETCH = globalThis.fetch;
 const ORIGINAL_ENV = { ...process.env };
@@ -26,9 +26,7 @@ afterEach(() => {
 // We use a dynamic import helper to reset state between tests.
 async function getDispatch() {
   // Use runAction for testable dispatch (no process.exit)
-  const mod = await import(
-    "../../../skills/batch-cep/scripts/cep/segments.mjs"
-  );
+  const mod = await import("../../../skills/batch-cep/scripts/cep/segments.mjs");
   return mod.runAction;
 }
 
@@ -46,7 +44,7 @@ describe("segments list", () => {
     const [url, init] = fetchMock.mock.calls[0];
     expect(url).toBe("https://api.batch.com/2.11/segments/list");
     expect(init.method).toBe("POST");
-    expect(init.headers["Authorization"]).toBe("Bearer rk-test");
+    expect(init.headers.Authorization).toBe("Bearer rk-test");
     expect(init.headers["X-Batch-Project"]).toBe("proj-test");
     expect(out.ok).toBe(true);
     expect(out.result.segments).toHaveLength(1);
@@ -69,10 +67,7 @@ describe("segments list", () => {
 
   it("surfaces 401 from Batch as AUTH_ERROR", async () => {
     withCredentials();
-    globalThis.fetch = mockFetch(
-      { error_code: "AUTH_ERROR", error_message: "bad key" },
-      401,
-    );
+    globalThis.fetch = mockFetch({ error_code: "AUTH_ERROR", error_message: "bad key" }, 401);
 
     const runAction = await getDispatch();
     const out = await captureOutput(async () => {
