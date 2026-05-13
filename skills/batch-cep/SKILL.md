@@ -1,22 +1,21 @@
 ---
 name: batch-cep
 description: >
-  Orchestre Batch.com (Customer Engagement Platform + Mobile Engagement Platform) en langage
-  naturel. Wrap l'API Batch via fetch direct depuis Node — profils, audiences, campagnes
-  omnichannel, catalogues, transactional push, in-app campaigns, custom data, GDPR, exports.
-  Activé quand l'utilisateur mentionne 'batch', 'batch.com', 'Batch CEP', 'Batch MEP',
-  'marketing automation', 'push notification', 'campagne push', 'in-app campaign',
-  'audience custom', 'segmentation', 'transactional push', 'profil utilisateur Batch',
-  'orchestration marketing', 'GDPR Batch', 'export Batch', 'créer une campagne',
-  'liste mes audiences', 'envoyer une push', 'sync profils', 'déclencher une automation',
-  ou toute action liée à la marketing automation mobile/web via Batch.
+  Orchestrate Batch.com (Customer Engagement Platform + Mobile Engagement Platform) for marketers,
+  growth teams, and product managers. Use when the user mentions Batch, Batch.com, Batch CEP,
+  Batch MEP, push notifications, mobile notifications, in-app campaigns, transactional push,
+  marketing automation Batch, customer audiences, segmentation Batch, custom data, app data,
+  GDPR / RGPD requests on Batch, data exports, orchestration Batch, or any French phrases like
+  'envoyer une push', 'notification mobile', 'créer une campagne push', 'mes audiences Batch',
+  'liste mes audiences', 'sync profils', 'synchroniser mes clients', 'relancer mes utilisateurs',
+  'effacement RGPD', 'déclencher une automation', 'orchestration marketing'.
 ---
 
 # Batch-CEP — orchestration Batch.com depuis Claude
 
-Wrap direct de l'API Batch (CEP v2.11 + MEP v1.1) via fetch Node, sans MCP intermédiaire. Couvre les 60 endpoints publics : Customer Engagement Platform (profile-centric, project-scoped) + Mobile Engagement Platform (app/install-centric, per-platform).
+Wrap direct de l'API Batch (CEP v2.11 + MEP v1.1) via fetch Node, sans MCP intermédiaire. Couvre les endpoints publics : Customer Engagement Platform (profile-centric, project-scoped) + Mobile Engagement Platform (app/install-centric, per-platform).
 
-**Principe :** chaque commande appelle un script `scripts/<platform>/<resource>.mjs` qui parse les args, lit les credentials locaux, fait le call HTTP vers `api.batch.com`, et print le résultat JSON sur stdout. Claude lit l'output et le formate pour l'utilisateur.
+**Principe :** chaque commande appelle un script via le dispatcher `bin/batch.mjs` qui parse les args, lit les credentials locaux, fait le call HTTP vers `api.batch.com`, et print le résultat JSON sur stdout. Claude lit l'output et le formate pour l'utilisateur.
 
 ## Setup gates (à passer avant toute action)
 
@@ -27,6 +26,12 @@ Wrap direct de l'API Batch (CEP v2.11 + MEP v1.1) via fetch Node, sans MCP inter
 | Confirm | Pour les opérations destructives (`*_delete`, `*_remove`, `audience replace`, `gdpr erasure`), demander confirmation explicite à l'utilisateur avant exécution | Refuser et redemander |
 
 ## Commands
+
+> **Note** : `campaigns` (CEP) et `mep-campaigns` (MEP) sont des ressources DIFFÉRENTES :
+> - `campaigns` (CEP) = omnichannel campaigns (push + email + sms + in-app), profile-scoped, project-scoped
+> - `mep-campaigns` (MEP) = mass push campaigns only, install-scoped, app-key-scoped
+>
+> Même distinction pour `exports` (CEP) vs `mep-export` (MEP). Si l'utilisateur a un `campaign_token` sans savoir la plateforme, essayer `orchestrations view <token>` (CEP) en premier, fallback sur `mep-campaigns view <token>`.
 
 | Command | Category | Description | Reference |
 |---|---|---|---|
@@ -39,7 +44,7 @@ Wrap direct de l'API Batch (CEP v2.11 + MEP v1.1) via fetch Node, sans MCP inter
 | `profiles export <types>` | CEP | Request profile export | [reference/cep/profiles.md](reference/cep/profiles.md) |
 | `audiences create <name> <type>` | CEP | Create custom audience (async 202) | [reference/cep/audiences.md](reference/cep/audiences.md) |
 | `audiences update <name> <ids>` | CEP | Add ids to audience (async 202, idempotent) | [reference/cep/audiences.md](reference/cep/audiences.md) |
-| `audiences replace <name> <ids>` | CEP | Replace audience membership wholesale (async 202) | [reference/cep/audiences.md](reference/cep/audiences.md) |
+| `audiences replace <name> <ids> --confirm` | CEP | Replace audience membership wholesale (async 202, **destructive** — drops non-listed members) | [reference/cep/audiences.md](reference/cep/audiences.md) |
 | `audiences remove <name> <ids>` | CEP | Remove ids from audience (async 202, **destructive**) | [reference/cep/audiences.md](reference/cep/audiences.md) |
 | `audiences list` | CEP | List audiences (paginated) | [reference/cep/audiences.md](reference/cep/audiences.md) |
 | `audiences view <token-or-name>` | CEP | View audience metadata or poll async indexing | [reference/cep/audiences.md](reference/cep/audiences.md) |
@@ -87,19 +92,22 @@ Wrap direct de l'API Batch (CEP v2.11 + MEP v1.1) via fetch Node, sans MCP inter
 | `app-data list` | MEP | List app-wide keys | [reference/mep/app-data.md](reference/mep/app-data.md) |
 | `app-data update <key> <value>` | MEP | Update app-wide key | [reference/mep/app-data.md](reference/mep/app-data.md) |
 | `app-data delete <key>` | MEP | Delete app-wide key (**destructive**) | [reference/mep/app-data.md](reference/mep/app-data.md) |
-| `gdpr access-request <id> <email>` | MEP | Create GDPR access request | [reference/mep/gdpr.md](reference/mep/gdpr.md) |
-| `gdpr erasure-request <id> <email>` | MEP | Create GDPR erasure request (**destructive**, irreversible) | [reference/mep/gdpr.md](reference/mep/gdpr.md) |
+| `gdpr access-request <id-type> <id-value> <notification-email>` | MEP | Create GDPR access request | [reference/mep/gdpr.md](reference/mep/gdpr.md) |
+| `gdpr erasure-request <id-type> <id-value> <notification-email> --confirm` | MEP | Create GDPR erasure request (**destructive**, irreversible) | [reference/mep/gdpr.md](reference/mep/gdpr.md) |
 | `gdpr requests-list` | MEP | List GDPR requests | [reference/mep/gdpr.md](reference/mep/gdpr.md) |
 | `gdpr requests-view <id>` | MEP | View GDPR request | [reference/mep/gdpr.md](reference/mep/gdpr.md) |
 | `mep-export create <type>` | MEP | Request MEP data export | [reference/mep/exports.md](reference/mep/exports.md) |
 | `mep-export list` | MEP | List MEP exports | [reference/mep/exports.md](reference/mep/exports.md) |
 | `mep-export view <id>` | MEP | View MEP export status | [reference/mep/exports.md](reference/mep/exports.md) |
 
+(`id-type` ∈ `custom_id|install_id|email`)
+
 ## Routing rules
 
 1. **No argument** (`$batch-cep`) → render the table above as user-facing menu, ask what they'd like to do.
-2. **First word matches a command** → load the referenced markdown file, then execute the corresponding script via bash. Format: `node ${SKILL_PATH}/scripts/<platform>/<resource>.mjs <action> <args...>`.
-3. **First word doesn't match** → suggest closest commands and propose `$batch-cep help`.
+2. **First word is `setup`** → handled conversationally (no script). Load `reference/setup.md`, ask user for credentials interactively in chat, write `${PROJECT_FOLDER:-.}/batch-credentials.json` via Write tool or bash heredoc, confirm readiness, then resume any pending action.
+3. **First word matches a command** → load the referenced markdown file, then execute via the dispatcher: `node skills/batch-cep/bin/batch.mjs <resource> <action> <args...>` (paths relative to plugin root — the parent directory of this SKILL.md file).
+4. **First word doesn't match** → suggest closest commands and propose `$batch-cep help`.
 
 ## Cross-cutting references (load as needed)
 
@@ -109,16 +117,15 @@ Wrap direct de l'API Batch (CEP v2.11 + MEP v1.1) via fetch Node, sans MCP inter
 - [reference/async-pattern.md](reference/async-pattern.md) — 202 + indexing_token poll loop (CEP only)
 - [reference/errors.md](reference/errors.md) — error codes, troubleshooting, retryable vs not
 
-## Setup gate detail
+## Plugin limits — what this skill cannot do
 
-Before any Batch action, verify credentials:
+Be honest with the user when these come up:
 
-```bash
-test -f "${PROJECT_FOLDER:-.}/batch-credentials.json" && \
-  node -e "const c = require('${PROJECT_FOLDER:-.}/batch-credentials.json'); if (!c.rest_key || !c.project_key) process.exit(1)"
-```
-
-If the file is absent or incomplete → run `$batch-cep setup` first.
+- **No temporal sequencing / scheduling.** The plugin can fire pushes/campaigns immediately but cannot schedule "send in 24h" or "send J+7 after signup". For multi-step user journeys (onboarding sequences, re-engagement), configure an **automation** in the Batch dashboard (trigger event → wait → push). The plugin can fire the trigger events that wake up those automations (`$batch-cep trigger-events send`), but the journey itself is dashboard-defined.
+- **No A/B testing primitive.** The skill creates one campaign at a time. To run A/B, create two campaigns with different `messages` and split the audience manually (or use Batch's dashboard A/B feature).
+- **No personalization templating documented.** Batch supports `{{custom_attributes.first_name}}` style templates in push body. The plugin passes message bodies through verbatim — see Batch API docs for the templating syntax. Plugin reference does not currently teach this.
+- **No cross-platform fanout helper.** Each MEP call targets one platform via `--app-key`. To push to iOS + Android + Web, call the same command 3 times with 3 different keys. There's no `--all-platforms` shortcut.
+- **No CEP campaign automation creation via API.** Batch automations are dashboard-only. `$batch-cep orchestrations list/view/stats` is read-only.
 
 ## Destructive operations
 
