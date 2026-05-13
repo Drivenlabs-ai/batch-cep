@@ -237,7 +237,7 @@ function resolveAppKey(credentials, alias) {
   if (!credentials.app_keys || !credentials.app_keys[keyToUse]) {
     throw new ValidationError(
       `App key alias "${keyToUse}" not found in batch-credentials.json`,
-      "Valid aliases: " + Object.keys(credentials.app_keys ?? {}).join(", "),
+      `Valid aliases: ${Object.keys(credentials.app_keys ?? {}).join(", ")}`,
     );
   }
   return credentials.app_keys[keyToUse];

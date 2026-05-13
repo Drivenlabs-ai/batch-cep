@@ -37,8 +37,8 @@
 // - Reports chunk number and error details
 // - Partial successes are NOT rolled back
 
-import { readFileSync, existsSync } from "node:fs";
 import { execSync } from "node:child_process";
+import { existsSync, readFileSync } from "node:fs";
 import { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -132,16 +132,12 @@ for (let i = 0; i < chunks.length; i++) {
   const chunkNum = i + 1;
   const chunkTotal = chunks.length;
 
-  console.log(
-    `\n[${chunkNum}/${chunkTotal}] Sending ${chunk.length} edits to Batch...`
-  );
+  console.log(`\n[${chunkNum}/${chunkTotal}] Sending ${chunk.length} edits to Batch...`);
 
   try {
     // Call batch-cep CLI with serialized JSON
     // Path: ${SKILL_PATH}/scripts/cep/profiles.mjs mass-update <json>
-    const skillPath =
-      process.env.SKILL_PATH ||
-      `${__dirname}/../scripts`; /* fallback to local */
+    const skillPath = process.env.SKILL_PATH || `${__dirname}/../scripts`; /* fallback to local */
     const cmd = `node "${skillPath}/cep/profiles.mjs" mass-update '${JSON.stringify(chunk)}'`;
 
     const result = execSync(cmd, {
@@ -173,16 +169,12 @@ for (let i = 0; i < chunks.length; i++) {
 }
 
 // Report final results
-console.log("\n" + "=".repeat(50));
+console.log(`\n${"=".repeat(50)}`);
 if (failedChunk) {
-  console.error(
-    `\n❌ Sync stopped at chunk ${failedChunk}/${chunks.length}.`
-  );
+  console.error(`\n❌ Sync stopped at chunk ${failedChunk}/${chunks.length}.`);
   console.error(`${totalUpdated} profiles updated before failure.`);
   console.error("\nTo retry failed chunks:");
-  console.error(
-    `- Fix any issues (CSV format, credentials, Batch errors)`
-  );
+  console.error("- Fix any issues (CSV format, credentials, Batch errors)");
   console.error(`- Re-run: node csv-sync.mjs ${csvPath}`);
   process.exit(1);
 } else {

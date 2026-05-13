@@ -35,9 +35,7 @@ describe("audiences create", () => {
   it("rejects name with space (VALIDATION_ERROR)", async () => {
     withCredentials();
     const runAction = await getRunAction();
-    const out = await captureOutput(() =>
-      runAction("create", ["bad name", "custom_ids"]),
-    );
+    const out = await captureOutput(() => runAction("create", ["bad name", "custom_ids"]));
     expect(out.ok).toBe(false);
     expect(out.error.error_code).toBe("VALIDATION_ERROR");
   });
@@ -45,9 +43,7 @@ describe("audiences create", () => {
   it("rejects name >255 chars (VALIDATION_ERROR)", async () => {
     withCredentials();
     const runAction = await getRunAction();
-    const out = await captureOutput(() =>
-      runAction("create", ["x".repeat(300), "custom_ids"]),
-    );
+    const out = await captureOutput(() => runAction("create", ["x".repeat(300), "custom_ids"]));
     expect(out.ok).toBe(false);
     expect(out.error.error_code).toBe("VALIDATION_ERROR");
   });
@@ -55,9 +51,7 @@ describe("audiences create", () => {
   it("rejects unknown type enum (VALIDATION_ERROR)", async () => {
     withCredentials();
     const runAction = await getRunAction();
-    const out = await captureOutput(() =>
-      runAction("create", ["good_name", "macos_ids"]),
-    );
+    const out = await captureOutput(() => runAction("create", ["good_name", "macos_ids"]));
     expect(out.ok).toBe(false);
     expect(out.error.error_code).toBe("VALIDATION_ERROR");
   });
@@ -97,9 +91,7 @@ describe("audiences create", () => {
     );
 
     const runAction = await getRunAction();
-    const out = await captureOutput(() =>
-      runAction("create", ["vip_users", "custom_ids"]),
-    );
+    const out = await captureOutput(() => runAction("create", ["vip_users", "custom_ids"]));
 
     expect(out.ok).toBe(false);
     expect(out.error.http_status).toBe(409);
@@ -112,9 +104,7 @@ describe("audiences create", () => {
     rmSync(dir, { recursive: true });
 
     const runAction = await getRunAction();
-    const out = await captureOutput(() =>
-      runAction("create", ["vip_users", "custom_ids"]),
-    );
+    const out = await captureOutput(() => runAction("create", ["vip_users", "custom_ids"]));
 
     expect(out.ok).toBe(false);
     expect(out.error.error_code).toBe("CONFIG_MISSING");
@@ -129,9 +119,7 @@ describe("audiences update", () => {
   it("rejects name with space (VALIDATION_ERROR)", async () => {
     withCredentials();
     const runAction = await getRunAction();
-    const out = await captureOutput(() =>
-      runAction("update", ["bad name", '["u1"]']),
-    );
+    const out = await captureOutput(() => runAction("update", ["bad name", '["u1"]']));
     expect(out.ok).toBe(false);
     expect(out.error.error_code).toBe("VALIDATION_ERROR");
   });
@@ -139,9 +127,7 @@ describe("audiences update", () => {
   it("rejects empty ids array (VALIDATION_ERROR)", async () => {
     withCredentials();
     const runAction = await getRunAction();
-    const out = await captureOutput(() =>
-      runAction("update", ["vip", "[]"]),
-    );
+    const out = await captureOutput(() => runAction("update", ["vip", "[]"]));
     expect(out.ok).toBe(false);
     expect(out.error.error_code).toBe("VALIDATION_ERROR");
   });
@@ -152,9 +138,7 @@ describe("audiences update", () => {
     globalThis.fetch = fetchMock;
 
     const runAction = await getRunAction();
-    const out = await captureOutput(() =>
-      runAction("update", ["vip", '["u1","u2"]']),
-    );
+    const out = await captureOutput(() => runAction("update", ["vip", '["u1","u2"]']));
 
     expect(out.ok).toBe(true);
     expect(out.command).toBe("audiences update");
@@ -176,9 +160,7 @@ describe("audiences update", () => {
     );
 
     const runAction = await getRunAction();
-    const out = await captureOutput(() =>
-      runAction("update", ["ghost", '["u1"]']),
-    );
+    const out = await captureOutput(() => runAction("update", ["ghost", '["u1"]']));
 
     expect(out.ok).toBe(false);
     expect(out.error.http_status).toBe(404);
@@ -190,9 +172,7 @@ describe("audiences update", () => {
     rmSync(dir, { recursive: true });
 
     const runAction = await getRunAction();
-    const out = await captureOutput(() =>
-      runAction("update", ["vip", '["u1"]']),
-    );
+    const out = await captureOutput(() => runAction("update", ["vip", '["u1"]']));
 
     expect(out.ok).toBe(false);
     expect(out.error.error_code).toBe("CONFIG_MISSING");
@@ -207,9 +187,7 @@ describe("audiences replace", () => {
   it("rejects name with space (VALIDATION_ERROR)", async () => {
     withCredentials();
     const runAction = await getRunAction();
-    const out = await captureOutput(() =>
-      runAction("replace", ["x x", '["u1"]']),
-    );
+    const out = await captureOutput(() => runAction("replace", ["x x", '["u1"]']));
     expect(out.ok).toBe(false);
     expect(out.error.error_code).toBe("VALIDATION_ERROR");
   });
@@ -217,9 +195,7 @@ describe("audiences replace", () => {
   it("rejects empty ids array (VALIDATION_ERROR)", async () => {
     withCredentials();
     const runAction = await getRunAction();
-    const out = await captureOutput(() =>
-      runAction("replace", ["vip", "[]"]),
-    );
+    const out = await captureOutput(() => runAction("replace", ["vip", "[]"]));
     expect(out.ok).toBe(false);
     expect(out.error.error_code).toBe("VALIDATION_ERROR");
   });
@@ -230,9 +206,7 @@ describe("audiences replace", () => {
     globalThis.fetch = fetchMock;
 
     const runAction = await getRunAction();
-    const out = await captureOutput(() =>
-      runAction("replace", ["vip", '["u1","u2"]']),
-    );
+    const out = await captureOutput(() => runAction("replace", ["vip", '["u1","u2"]']));
 
     expect(out.ok).toBe(true);
     expect(out.command).toBe("audiences replace");
@@ -251,9 +225,7 @@ describe("audiences replace", () => {
     );
 
     const runAction = await getRunAction();
-    const out = await captureOutput(() =>
-      runAction("replace", ["ghost", '["u1"]']),
-    );
+    const out = await captureOutput(() => runAction("replace", ["ghost", '["u1"]']));
 
     expect(out.ok).toBe(false);
     expect(out.error.http_status).toBe(404);
@@ -265,9 +237,7 @@ describe("audiences replace", () => {
     rmSync(dir, { recursive: true });
 
     const runAction = await getRunAction();
-    const out = await captureOutput(() =>
-      runAction("replace", ["vip", '["u1"]']),
-    );
+    const out = await captureOutput(() => runAction("replace", ["vip", '["u1"]']));
 
     expect(out.ok).toBe(false);
     expect(out.error.error_code).toBe("CONFIG_MISSING");
@@ -283,9 +253,7 @@ describe("audiences remove", () => {
     withCredentials();
     const runAction = await getRunAction();
     // No --confirm flag → 4th arg absent
-    const out = await captureOutput(() =>
-      runAction("remove", ["vip", '["u1"]']),
-    );
+    const out = await captureOutput(() => runAction("remove", ["vip", '["u1"]']));
     expect(out.ok).toBe(false);
     expect(out.error.error_code).toBe("CONFIRM_REQUIRED");
     expect(out.error.error_message).toMatch(/confirm/i);
@@ -294,9 +262,7 @@ describe("audiences remove", () => {
   it("rejects name with space (VALIDATION_ERROR)", async () => {
     withCredentials();
     const runAction = await getRunAction();
-    const out = await captureOutput(() =>
-      runAction("remove", ["bad name", '["u1"]', "--confirm"]),
-    );
+    const out = await captureOutput(() => runAction("remove", ["bad name", '["u1"]', "--confirm"]));
     expect(out.ok).toBe(false);
     expect(out.error.error_code).toBe("VALIDATION_ERROR");
   });
@@ -304,9 +270,7 @@ describe("audiences remove", () => {
   it("rejects empty ids array (VALIDATION_ERROR)", async () => {
     withCredentials();
     const runAction = await getRunAction();
-    const out = await captureOutput(() =>
-      runAction("remove", ["vip", "[]", "--confirm"]),
-    );
+    const out = await captureOutput(() => runAction("remove", ["vip", "[]", "--confirm"]));
     expect(out.ok).toBe(false);
     expect(out.error.error_code).toBe("VALIDATION_ERROR");
   });
@@ -317,9 +281,7 @@ describe("audiences remove", () => {
     globalThis.fetch = fetchMock;
 
     const runAction = await getRunAction();
-    const out = await captureOutput(() =>
-      runAction("remove", ["vip", '["u1","u2"]', "--confirm"]),
-    );
+    const out = await captureOutput(() => runAction("remove", ["vip", '["u1","u2"]', "--confirm"]));
 
     expect(out.ok).toBe(true);
     expect(out.command).toBe("audiences remove");
@@ -343,9 +305,7 @@ describe("audiences remove", () => {
     );
 
     const runAction = await getRunAction();
-    const out = await captureOutput(() =>
-      runAction("remove", ["ghost", '["u1"]', "--confirm"]),
-    );
+    const out = await captureOutput(() => runAction("remove", ["ghost", '["u1"]', "--confirm"]));
 
     expect(out.ok).toBe(false);
     expect(out.error.http_status).toBe(404);
@@ -357,9 +317,7 @@ describe("audiences remove", () => {
     rmSync(dir, { recursive: true });
 
     const runAction = await getRunAction();
-    const out = await captureOutput(() =>
-      runAction("remove", ["vip", '["u1"]', "--confirm"]),
-    );
+    const out = await captureOutput(() => runAction("remove", ["vip", '["u1"]', "--confirm"]));
 
     expect(out.ok).toBe(false);
     expect(out.error.error_code).toBe("CONFIG_MISSING");
@@ -397,9 +355,7 @@ describe("audiences list", () => {
     globalThis.fetch = fetchMock;
 
     const runAction = await getRunAction();
-    await captureOutput(() =>
-      runAction("list", ["--limit", "50", "--cursor", "abc"]),
-    );
+    await captureOutput(() => runAction("list", ["--limit", "50", "--cursor", "abc"]));
 
     const [, init] = fetchMock.mock.calls[0];
     const body = JSON.parse(init.body);
@@ -409,10 +365,7 @@ describe("audiences list", () => {
 
   it("surfaces 401 from Batch", async () => {
     withCredentials();
-    globalThis.fetch = mockFetch(
-      { error_code: "AUTH", error_message: "bad key" },
-      401,
-    );
+    globalThis.fetch = mockFetch({ error_code: "AUTH", error_message: "bad key" }, 401);
 
     const runAction = await getRunAction();
     const out = await captureOutput(() => runAction("list", []));

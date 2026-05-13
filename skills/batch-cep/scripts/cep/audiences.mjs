@@ -324,8 +324,8 @@ async function handleList(args) {
   const body = {};
   for (let i = 0; i < args.length; i++) {
     if (args[i] === "--limit" && args[i + 1]) {
-      const limit = parseInt(args[i + 1], 10);
-      if (!isNaN(limit)) body.limit = limit;
+      const limit = Number.parseInt(args[i + 1], 10);
+      if (!Number.isNaN(limit)) body.limit = limit;
       i++;
     } else if (args[i] === "--cursor" && args[i + 1]) {
       body.cursor = args[i + 1];

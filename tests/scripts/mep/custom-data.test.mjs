@@ -46,7 +46,7 @@ describe("custom-data set", () => {
   it("rejects custom_id > 512 chars (VALIDATION_ERROR)", async () => {
     withCredentials();
     const runAction = await getRunAction();
-    const longId = "u_" + "a".repeat(511);
+    const longId = `u_${"a".repeat(511)}`;
     const out = await captureOutput(() =>
       runAction("set", [longId, JSON.stringify({ key: "value" })]),
     );
