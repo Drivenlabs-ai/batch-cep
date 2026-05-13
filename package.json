@@ -1,8 +1,9 @@
 {
   "name": "batch-cep-plugin",
-  "private": true,
   "version": "0.1.0",
+  "description": "batch-cep Claude skill — orchestrate Batch.com via natural language",
   "type": "module",
+  "private": true,
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest",

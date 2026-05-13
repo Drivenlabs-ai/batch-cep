@@ -1,33 +1,37 @@
-// Shared test utilities for the batch-cep plugin.
+// Copyright (C) 2026 Drivenlabs — Alexandre Bouchez
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import { vi } from "vitest";
 
 /**
- * Build a mocked `fetch` returning a Response-like object.
- * Pass `body` as object (JSON-encoded) or string (returned as-is).
+ * Build a vi.fn() that mimics fetch(): returns a Response-like object with the
+ * given body, status, and headers. Use to mock globalThis.fetch in tests.
  */
 export function mockFetch(body, status = 200, headers = {}) {
   return vi.fn(async () => {
+    const bodyText =
+      body === null || body === undefined
+        ? null
+        : typeof body === "string"
+          ? body
+          : JSON.stringify(body);
     const responseHeaders = { "Content-Type": "application/json", ...headers };
-    const responseBody = typeof body === "string" ? body : JSON.stringify(body);
-    return new Response(responseBody, { status, headers: responseHeaders });
+    return new Response(bodyText, { status, headers: responseHeaders });
   });
 }
 
 /**
- * Run `fn()` while capturing `console.log` output, return the parsed JSON.
- * Throws if output is not valid JSON.
+ * Capture console.log output during fn() execution and parse it as JSON.
+ * Scripts write exactly one JSON object to stdout — this helper extracts it.
  */
 export async function captureOutput(fn) {
   const logs = [];
-  const origLog = console.log;
-  const origError = console.error;
-  console.log = (s) => logs.push(s);
-  console.error = (s) => logs.push(s);
+  const originalLog = console.log;
+  console.log = (s) => logs.push(typeof s === "string" ? s : String(s));
   try {
     await fn();
   } finally {
-    console.log = origLog;
-    console.error = origError;
+    console.log = originalLog;
   }
   const joined = logs.join("\n").trim();
   if (!joined) return null;
@@ -35,7 +39,8 @@ export async function captureOutput(fn) {
 }
 
 /**
- * Default test credentials. Override individual fields by passing { ...overrides }.
+ * Default test credentials used by tests. Override individual fields via the
+ * overrides param.
  */
 export function fakeCredentials(overrides = {}) {
   return {

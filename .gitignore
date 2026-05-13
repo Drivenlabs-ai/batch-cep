@@ -1,5 +1,5 @@
 node_modules/
 *.local.*
 batch-credentials.json
+dist/
 .DS_Store
-.vitest/
