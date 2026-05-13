@@ -24,6 +24,17 @@ If you don't specify `PROJECT_FOLDER`, it defaults to the current working direct
 
 ## Credentials file format
 
+**CEP-only (minimal):**
+
+```json
+{
+  "rest_key": "YOUR_ACCOUNT_REST_API_KEY",
+  "project_key": "YOUR_CEP_PROJECT_KEY"
+}
+```
+
+**CEP + MEP (full):**
+
 ```json
 {
   "rest_key": "YOUR_ACCOUNT_REST_API_KEY",
@@ -44,7 +55,7 @@ All fields are **optional except `rest_key` and `project_key`**.
 
 - `rest_key` — account-wide REST API key (required for CEP and MEP)
 - `project_key` — CEP project key (required for CEP commands)
-- `app_keys` — object of platform aliases (optional, required if you use MEP)
+- `app_keys` — object of platform aliases (**optional** — only required for MEP commands). CEP commands work without it.
 - `default_app_key` — which app key alias to use if none specified (optional, defaults to `ios_live`)
 - `api_base_url` — override API endpoint (optional, defaults to `https://api.batch.com`)
 

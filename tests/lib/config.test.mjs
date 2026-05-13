@@ -1,3 +1,6 @@
+// Copyright (C) 2026 Drivenlabs — Alexandre Bouchez
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import { existsSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -166,7 +169,7 @@ describe("loadConfig", () => {
     }
   });
 
-  it("validates app_keys has at least one entry", () => {
+  it("accepts empty app_keys object (CEP-only scenario — app_keys optional)", () => {
     const tmpDir = tmpdir();
     const credsPath = join(tmpDir, `creds-${Date.now()}.json`);
 
@@ -179,9 +182,37 @@ describe("loadConfig", () => {
 
       writeFileSync(credsPath, JSON.stringify(creds), "utf-8");
 
-      expect(() => {
-        loadConfig(credsPath);
-      }).toThrow(/app_keys|empty|required/i);
+      const result = loadConfig(credsPath);
+      // Empty app_keys object is treated as "no MEP keys" — no error
+      expect(result.rest_key).toBe("rk-test");
+      expect(result.project_key).toBe("proj-test");
+      expect(result.app_keys).toBeNull();
+      expect(result.default_app_key).toBeNull();
+    } finally {
+      if (existsSync(credsPath)) {
+        unlinkSync(credsPath);
+      }
+    }
+  });
+
+  it("getCepConfig works when app_keys is absent", () => {
+    const tmpDir = tmpdir();
+    const credsPath = join(tmpDir, `creds-${Date.now()}.json`);
+
+    try {
+      const creds = {
+        rest_key: "rk-test",
+        project_key: "proj-test",
+        // no app_keys at all
+      };
+
+      writeFileSync(credsPath, JSON.stringify(creds), "utf-8");
+
+      const result = loadConfig(credsPath);
+      expect(result.rest_key).toBe("rk-test");
+      expect(result.project_key).toBe("proj-test");
+      expect(result.app_keys).toBeNull();
+      expect(result.default_app_key).toBeNull();
     } finally {
       if (existsSync(credsPath)) {
         unlinkSync(credsPath);

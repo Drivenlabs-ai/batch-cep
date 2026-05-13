@@ -279,11 +279,16 @@ async function handleUpdate(args) {
 }
 
 /**
- * replace <name> <ids-json>
- * POST /audiences/replace → 202 (full overwrite)
+ * replace <name> <ids-json> --confirm
+ * POST /audiences/replace → 202 (full overwrite) — DESTRUCTIVE
  */
 async function handleReplace(args) {
-  const [name, idsRaw] = args;
+  const [name, idsRaw, ...rest] = args;
+
+  // Confirm gate: --confirm must be present as a positional arg
+  if (!rest.includes("--confirm")) {
+    throw new ConfirmError();
+  }
 
   validateName(name);
   const ids = parseIds(idsRaw);

@@ -32,37 +32,30 @@ async function getRunAction() {
 // ---------------------------------------------------------------------------
 
 describe("gdpr access-request", () => {
-  it("1. rejects when no identifier provided (refine fail)", async () => {
+  it("1. rejects when identifier-type is missing", async () => {
     withCredentials();
     const runAction = await getRunAction();
-    const out = await captureOutput(() =>
-      runAction("access-request", [JSON.stringify({}), "ops@x.com"]),
-    );
+    const out = await captureOutput(() => runAction("access-request", []));
     expect(out.ok).toBe(false);
     expect(out.error.error_code).toBe("VALIDATION_ERROR");
-    expect(out.error.error_message).toMatch(/exactly one/i);
+    expect(out.error.error_message).toMatch(/identifier-type/i);
   });
 
-  it("2. rejects when multiple identifiers provided (refine fail)", async () => {
+  it("2. rejects invalid identifier-type", async () => {
     withCredentials();
     const runAction = await getRunAction();
     const out = await captureOutput(() =>
-      runAction("access-request", [
-        JSON.stringify({ custom_id: "u_1", email: "user@x.com" }),
-        "ops@x.com",
-      ]),
+      runAction("access-request", ["bad_type", "u_1", "ops@x.com"]),
     );
     expect(out.ok).toBe(false);
     expect(out.error.error_code).toBe("VALIDATION_ERROR");
-    expect(out.error.error_message).toMatch(/exactly one/i);
+    expect(out.error.error_message).toMatch(/bad_type/);
   });
 
   it("3. rejects missing notification_email", async () => {
     withCredentials();
     const runAction = await getRunAction();
-    const out = await captureOutput(() =>
-      runAction("access-request", [JSON.stringify({ custom_id: "u_1" })]),
-    );
+    const out = await captureOutput(() => runAction("access-request", ["custom_id", "u_1"]));
     expect(out.ok).toBe(false);
     expect(out.error.error_code).toBe("VALIDATION_ERROR");
   });
@@ -74,7 +67,7 @@ describe("gdpr access-request", () => {
 
     const runAction = await getRunAction();
     const out = await captureOutput(() =>
-      runAction("access-request", [JSON.stringify({ custom_id: "u_1" }), "ops@x.com"]),
+      runAction("access-request", ["custom_id", "u_1", "ops@x.com"]),
     );
 
     expect(out.ok).toBe(true);
@@ -97,12 +90,7 @@ describe("gdpr access-request", () => {
     withCredentials();
     const runAction = await getRunAction();
     const out = await captureOutput(() =>
-      runAction("access-request", [
-        JSON.stringify({ custom_id: "u_1" }),
-        "ops@x.com",
-        "--app-key",
-        "unknown_alias",
-      ]),
+      runAction("access-request", ["custom_id", "u_1", "ops@x.com", "--app-key", "unknown_alias"]),
     );
     expect(out.ok).toBe(false);
     expect(out.error.error_code).toBe("VALIDATION_ERROR");
@@ -118,9 +106,7 @@ describe("gdpr erasure-request", () => {
   it("1. rejects when --confirm missing (CONFIRM_REQUIRED)", async () => {
     withCredentials();
     const runAction = await getRunAction();
-    const out = await captureOutput(() =>
-      runAction("erasure-request", [JSON.stringify({ custom_id: "u_1" }), "ops@x.com"]),
-    );
+    const out = await captureOutput(() => runAction("erasure-request", ["custom_id", "u_1"]));
     expect(out.ok).toBe(false);
     expect(out.error.error_code).toBe("CONFIRM_REQUIRED");
   });
@@ -129,36 +115,31 @@ describe("gdpr erasure-request", () => {
     withCredentials();
     const runAction = await getRunAction();
     const out = await captureOutput(() =>
-      runAction("erasure-request", [JSON.stringify({ custom_id: "u_1" }), "ops@x.com", "--limit"]),
+      runAction("erasure-request", ["custom_id", "u_1", "--limit"]),
     );
     expect(out.ok).toBe(false);
     expect(out.error.error_code).toBe("CONFIRM_REQUIRED");
   });
 
-  it("3. rejects when no identifier provided (refine fail)", async () => {
+  it("3. rejects invalid identifier-type (VALIDATION_ERROR)", async () => {
     withCredentials();
     const runAction = await getRunAction();
     const out = await captureOutput(() =>
-      runAction("erasure-request", [JSON.stringify({}), "ops@x.com", "--confirm"]),
+      runAction("erasure-request", ["bad_type", "u_1", "--confirm"]),
     );
     expect(out.ok).toBe(false);
     expect(out.error.error_code).toBe("VALIDATION_ERROR");
-    expect(out.error.error_message).toMatch(/exactly one/i);
+    expect(out.error.error_message).toMatch(/bad_type/);
   });
 
-  it("4. rejects when multiple identifiers provided (refine fail)", async () => {
+  it("4. rejects missing identifier-value (VALIDATION_ERROR)", async () => {
     withCredentials();
     const runAction = await getRunAction();
     const out = await captureOutput(() =>
-      runAction("erasure-request", [
-        JSON.stringify({ custom_id: "u_1", install_id: "i_1" }),
-        "ops@x.com",
-        "--confirm",
-      ]),
+      runAction("erasure-request", ["custom_id", "", "--confirm"]),
     );
     expect(out.ok).toBe(false);
     expect(out.error.error_code).toBe("VALIDATION_ERROR");
-    expect(out.error.error_message).toMatch(/exactly one/i);
   });
 
   it("5. happy path — install_id, --confirm, confirm stripped from body", async () => {
@@ -168,11 +149,7 @@ describe("gdpr erasure-request", () => {
 
     const runAction = await getRunAction();
     const out = await captureOutput(() =>
-      runAction("erasure-request", [
-        JSON.stringify({ install_id: "i_1" }),
-        "ops@x.com",
-        "--confirm",
-      ]),
+      runAction("erasure-request", ["install_id", "i_1", "--confirm"]),
     );
 
     expect(out.ok).toBe(true);
@@ -186,7 +163,6 @@ describe("gdpr erasure-request", () => {
     const body = JSON.parse(init.body);
     expect(body.type).toBe("erasure");
     expect(body.install_id).toBe("i_1");
-    expect(body.notification_email).toBe("ops@x.com");
     expect(body.confirm).toBeUndefined();
     expect(body.app_key).toBeUndefined();
   });
@@ -195,13 +171,7 @@ describe("gdpr erasure-request", () => {
     withCredentials();
     const runAction = await getRunAction();
     const out = await captureOutput(() =>
-      runAction("erasure-request", [
-        JSON.stringify({ custom_id: "u_1" }),
-        "ops@x.com",
-        "--confirm",
-        "--app-key",
-        "bad_alias",
-      ]),
+      runAction("erasure-request", ["custom_id", "u_1", "--confirm", "--app-key", "bad_alias"]),
     );
     expect(out.ok).toBe(false);
     expect(out.error.error_code).toBe("VALIDATION_ERROR");

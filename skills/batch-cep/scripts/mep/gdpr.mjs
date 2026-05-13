@@ -181,65 +181,43 @@ function parseAppKeyFlag(args) {
   return idx >= 0 ? args[idx + 1] : undefined;
 }
 
+const VALID_IDENTIFIER_TYPES = new Set(["custom_id", "install_id", "email"]);
+
 /**
- * Validate identifier JSON: exactly one of custom_id, install_id, email.
- * Returns parsed identifier object.
+ * Parse and validate identifier type and value from positional args.
+ * Returns an object {[identifierType]: identifierValue} for inclusion in the body.
  */
-function parseIdentifier(identifierRaw) {
-  if (!identifierRaw) {
+function parseIdentifierArgs(identifierType, identifierValue) {
+  if (!identifierType) {
     throw new ValidationError(
-      "Missing identifier JSON (first positional argument).",
-      'Pass a JSON object with exactly one of: {"custom_id":"..."}, {"install_id":"..."}, {"email":"..."}',
+      "Missing identifier-type (first positional argument).",
+      "Pass one of: custom_id, install_id, email",
     );
   }
 
-  let identifier;
-  try {
-    identifier = JSON.parse(identifierRaw);
-  } catch {
+  if (!VALID_IDENTIFIER_TYPES.has(identifierType)) {
     throw new ValidationError(
-      "identifier argument is not valid JSON.",
-      'Pass a JSON object, e.g. \'{"custom_id":"u_1"}\'',
+      `Invalid identifier-type: "${identifierType}". Must be one of: ${Array.from(VALID_IDENTIFIER_TYPES).join(", ")}.`,
+      "Pass one of: custom_id, install_id, email",
     );
   }
 
-  if (typeof identifier !== "object" || identifier === null || Array.isArray(identifier)) {
+  if (!identifierValue || typeof identifierValue !== "string" || identifierValue.length === 0) {
     throw new ValidationError(
-      "identifier must be a JSON object.",
-      'Pass a JSON object, e.g. \'{"custom_id":"u_1"}\'',
+      "Missing or empty identifier-value (second positional argument).",
+      `Pass the user's ${identifierType} as the second argument.`,
     );
   }
 
-  const presentKeys = ["custom_id", "install_id", "email"].filter(
-    (k) => identifier[k] !== undefined,
-  );
-
-  if (presentKeys.length !== 1) {
-    throw new ValidationError(
-      `Exactly one of \`custom_id\`, \`install_id\`, \`email\` must identify the subject. Got: ${presentKeys.length === 0 ? "none" : presentKeys.join(", ")}.`,
-      'Pass exactly one identifier, e.g. \'{"custom_id":"u_1"}\'',
-    );
+  // Per-type validation
+  if (identifierType === "custom_id" && identifierValue.length > 512) {
+    throw new ValidationError("custom_id must be at most 512 characters.");
+  }
+  if (identifierType === "email" && !identifierValue.includes("@")) {
+    throw new ValidationError(`email must be a valid email address. Got: "${identifierValue}".`);
   }
 
-  const key = presentKeys[0];
-  const value = identifier[key];
-
-  // Per-field validation
-  if (key === "custom_id") {
-    if (typeof value !== "string" || value.length === 0 || value.length > 512) {
-      throw new ValidationError("custom_id must be a non-empty string of at most 512 characters.");
-    }
-  } else if (key === "install_id") {
-    if (typeof value !== "string" || value.length === 0) {
-      throw new ValidationError("install_id must be a non-empty string.");
-    }
-  } else if (key === "email") {
-    if (typeof value !== "string" || !value.includes("@")) {
-      throw new ValidationError(`email must be a valid email address. Got: "${value}".`);
-    }
-  }
-
-  return { [key]: value };
+  return { [identifierType]: identifierValue };
 }
 
 /**
@@ -273,13 +251,13 @@ function pickRequestId(data) {
 // ---------------------------------------------------------------------------
 
 /**
- * access-request <identifier-json> <notification-email> [--app-key ...]
+ * access-request <identifier-type> <identifier-value> <notification-email> [--app-key ...]
  * POST /gdpr/requests — type: "access" (non-destructive)
  */
 async function handleAccessRequest(args) {
-  const [identifierRaw, notifEmail, ...rest] = args;
+  const [identifierType, identifierValue, notifEmail, ...rest] = args;
 
-  const identifier = parseIdentifier(identifierRaw);
+  const identifier = parseIdentifierArgs(identifierType, identifierValue);
   const notification_email = parseNotificationEmail(notifEmail);
   const appKeyAlias = parseAppKeyFlag(rest);
 
@@ -299,11 +277,11 @@ async function handleAccessRequest(args) {
 }
 
 /**
- * erasure-request <identifier-json> <notification-email> --confirm [--app-key ...]
+ * erasure-request <identifier-type> <identifier-value> --confirm [--app-key ...]
  * POST /gdpr/requests — type: "erasure" (DESTRUCTIVE)
  */
 async function handleErasureRequest(args) {
-  const [identifierRaw, notifEmail, ...rest] = args;
+  const [identifierType, identifierValue, ...rest] = args;
 
   // Confirm gate first — before any other validation
   if (!rest.includes("--confirm")) {
@@ -313,14 +291,13 @@ async function handleErasureRequest(args) {
     );
   }
 
-  const identifier = parseIdentifier(identifierRaw);
-  const notification_email = parseNotificationEmail(notifEmail);
+  const identifier = parseIdentifierArgs(identifierType, identifierValue);
   const appKeyAlias = parseAppKeyFlag(rest);
 
   const creds = getCredentials();
   const appKeyValue = resolveAppKey(creds, appKeyAlias);
 
-  const body = { type: "erasure", ...identifier, notification_email };
+  const body = { type: "erasure", ...identifier };
   const response = await mepFetch(creds, "POST", `1.1/${appKeyValue}/gdpr/requests`, body);
 
   return {

@@ -184,10 +184,19 @@ describe("audiences update", () => {
 // ---------------------------------------------------------------------------
 
 describe("audiences replace", () => {
+  it("returns CONFIRM_REQUIRED when --confirm is absent", async () => {
+    withCredentials();
+    const runAction = await getRunAction();
+    const out = await captureOutput(() => runAction("replace", ["vip", '["u1"]']));
+    expect(out.ok).toBe(false);
+    expect(out.error.error_code).toBe("CONFIRM_REQUIRED");
+    expect(out.error.error_message).toMatch(/confirm/i);
+  });
+
   it("rejects name with space (VALIDATION_ERROR)", async () => {
     withCredentials();
     const runAction = await getRunAction();
-    const out = await captureOutput(() => runAction("replace", ["x x", '["u1"]']));
+    const out = await captureOutput(() => runAction("replace", ["x x", '["u1"]', "--confirm"]));
     expect(out.ok).toBe(false);
     expect(out.error.error_code).toBe("VALIDATION_ERROR");
   });
@@ -195,18 +204,20 @@ describe("audiences replace", () => {
   it("rejects empty ids array (VALIDATION_ERROR)", async () => {
     withCredentials();
     const runAction = await getRunAction();
-    const out = await captureOutput(() => runAction("replace", ["vip", "[]"]));
+    const out = await captureOutput(() => runAction("replace", ["vip", "[]", "--confirm"]));
     expect(out.ok).toBe(false);
     expect(out.error.error_code).toBe("VALIDATION_ERROR");
   });
 
-  it("happy path posts to /audiences/replace and returns indexing_token (full overwrite)", async () => {
+  it("happy path with --confirm posts to /audiences/replace and returns indexing_token (full overwrite)", async () => {
     withCredentials();
     const fetchMock = mockFetch({ indexing_token: "tok-rep" }, 202);
     globalThis.fetch = fetchMock;
 
     const runAction = await getRunAction();
-    const out = await captureOutput(() => runAction("replace", ["vip", '["u1","u2"]']));
+    const out = await captureOutput(() =>
+      runAction("replace", ["vip", '["u1","u2"]', "--confirm"]),
+    );
 
     expect(out.ok).toBe(true);
     expect(out.command).toBe("audiences replace");
@@ -225,7 +236,7 @@ describe("audiences replace", () => {
     );
 
     const runAction = await getRunAction();
-    const out = await captureOutput(() => runAction("replace", ["ghost", '["u1"]']));
+    const out = await captureOutput(() => runAction("replace", ["ghost", '["u1"]', "--confirm"]));
 
     expect(out.ok).toBe(false);
     expect(out.error.http_status).toBe(404);
@@ -237,7 +248,7 @@ describe("audiences replace", () => {
     rmSync(dir, { recursive: true });
 
     const runAction = await getRunAction();
-    const out = await captureOutput(() => runAction("replace", ["vip", '["u1"]']));
+    const out = await captureOutput(() => runAction("replace", ["vip", '["u1"]', "--confirm"]));
 
     expect(out.ok).toBe(false);
     expect(out.error.error_code).toBe("CONFIG_MISSING");

@@ -48,41 +48,51 @@ export function loadConfig(credentialsPath) {
     throw new Error("batch-credentials.json: project_key is required (string)");
   }
 
-  if (!data.app_keys || typeof data.app_keys !== "object" || Array.isArray(data.app_keys)) {
-    throw new Error("batch-credentials.json: app_keys is required (object)");
-  }
+  // app_keys is optional — only required for MEP commands.
+  // If present, validate it is a non-empty object of strings.
+  let appKeys = null;
+  let defaultAppKey = null;
 
-  const appKeyEntries = Object.entries(data.app_keys);
-  if (appKeyEntries.length === 0) {
-    throw new Error("batch-credentials.json: app_keys must have at least one entry");
-  }
-
-  // Validate all app_keys are strings
-  for (const [key, value] of appKeyEntries) {
-    if (typeof value !== "string") {
-      throw new Error(`batch-credentials.json: app_keys.${key} must be a string`);
+  if (data.app_keys !== undefined) {
+    if (typeof data.app_keys !== "object" || Array.isArray(data.app_keys)) {
+      throw new Error("batch-credentials.json: app_keys must be an object");
     }
-  }
 
-  // Determine default_app_key
-  let defaultAppKey = data.default_app_key;
-  if (!defaultAppKey) {
-    // Default to first app key (ios_live if it exists, otherwise first in the object)
-    defaultAppKey = data.app_keys.ios_live ? "ios_live" : appKeyEntries[0][0];
-  }
+    const appKeyEntries = Object.entries(data.app_keys);
 
-  // Validate default_app_key exists in app_keys
-  if (!data.app_keys[defaultAppKey]) {
-    throw new Error(
-      `batch-credentials.json: default_app_key "${defaultAppKey}" is not found in app_keys`,
-    );
+    // Validate all provided app_keys are strings
+    for (const [key, value] of appKeyEntries) {
+      if (typeof value !== "string") {
+        throw new Error(`batch-credentials.json: app_keys.${key} must be a string`);
+      }
+    }
+
+    if (appKeyEntries.length > 0) {
+      appKeys = data.app_keys;
+
+      // Determine default_app_key only when app_keys are present
+      defaultAppKey = data.default_app_key ?? null;
+      if (!defaultAppKey) {
+        // Default to ios_live if it exists, otherwise first in the object
+        defaultAppKey = data.app_keys.ios_live ? "ios_live" : appKeyEntries[0][0];
+      }
+
+      // Validate that default_app_key exists in app_keys
+      if (!data.app_keys[defaultAppKey]) {
+        throw new Error(
+          `batch-credentials.json: default_app_key "${defaultAppKey}" is not found in app_keys`,
+        );
+      }
+    }
+  } else if (data.default_app_key) {
+    // default_app_key without app_keys is harmless — just ignore it
   }
 
   // Return validated config with defaults
   return {
     rest_key: data.rest_key,
     project_key: data.project_key,
-    app_keys: data.app_keys,
+    app_keys: appKeys,
     default_app_key: defaultAppKey,
     api_base_url: data.api_base_url ?? "https://api.batch.com",
   };

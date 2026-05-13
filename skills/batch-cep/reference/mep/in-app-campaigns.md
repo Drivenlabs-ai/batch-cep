@@ -1,10 +1,10 @@
-# In-App Campaigns (MEP)
+# In-App Campaigns (MEP) — `$batch-cep in-app`
 
 Create and manage in-app messages (modals, banners, cards) displayed inside your mobile app. Trigger on app session, specific events, or on immediate show. Different from push campaigns — this targets the app UI, not the notification center.
 
 ## Commands
 
-### `$batch-cep in-app-campaigns create <payload-json> [--app-key]`
+### `$batch-cep in-app create <payload-json> [--app-key]`
 
 Create a new in-app campaign.
 
@@ -55,7 +55,7 @@ Create a new in-app campaign.
 **Example**
 
 ```bash
-$batch-cep in-app-campaigns create '{
+$batch-cep in-app create '{
   "name": "Onboarding Banner",
   "trigger": { "type": "NEXT_SESSION" },
   "landing": {
@@ -87,7 +87,7 @@ $batch-cep in-app-campaigns create '{
 
 ---
 
-### `$batch-cep in-app-campaigns update <campaign_token> <patch-json> [--app-key]`
+### `$batch-cep in-app update <campaign_token> <patch-json> [--app-key]`
 
 Update an existing in-app campaign (idempotent).
 
@@ -115,12 +115,12 @@ Update an existing in-app campaign (idempotent).
 **Example**
 
 ```bash
-$batch-cep in-app-campaigns update iap_xyz789 '{ "name": "Onboarding Banner (Extended)" }'
+$batch-cep in-app update iap_xyz789 '{ "name": "Onboarding Banner (Extended)" }'
 ```
 
 ---
 
-### `$batch-cep in-app-campaigns delete <campaign_token> --confirm [--app-key]`
+### `$batch-cep in-app delete <campaign_token> --confirm [--app-key]`
 
 Permanently delete an in-app campaign. **DESTRUCTIVE** — requires `--confirm`.
 
@@ -149,12 +149,12 @@ Permanently delete an in-app campaign. **DESTRUCTIVE** — requires `--confirm`.
 **Example**
 
 ```bash
-$batch-cep in-app-campaigns delete iap_xyz789 --confirm
+$batch-cep in-app delete iap_xyz789 --confirm
 ```
 
 ---
 
-### `$batch-cep in-app-campaigns view <campaign_token> [--app-key]`
+### `$batch-cep in-app view <campaign_token> [--app-key]`
 
 Retrieve full in-app campaign details.
 
@@ -190,12 +190,12 @@ Retrieve full in-app campaign details.
 **Example**
 
 ```bash
-$batch-cep in-app-campaigns view iap_xyz789
+$batch-cep in-app view iap_xyz789
 ```
 
 ---
 
-### `$batch-cep in-app-campaigns list [limit] [--app-key]`
+### `$batch-cep in-app list [limit] [--app-key]`
 
 List all in-app campaigns (optionally paginated).
 
@@ -228,7 +228,7 @@ List all in-app campaigns (optionally paginated).
 **Example**
 
 ```bash
-$batch-cep in-app-campaigns list 20
+$batch-cep in-app list 20
 ```
 
 ---
