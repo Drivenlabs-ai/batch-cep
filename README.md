@@ -4,6 +4,10 @@ Plugin Claude pour orchestrer **Batch.com** (CEP + MEP) en langage naturel.
 
 Wrap direct de l'API Batch via fetch Node — pas de MCP server, pas d'OAuth, pas de SaaS. Tu installes, tu donnes tes credentials une fois, Claude appelle Batch quand tu lui demandes.
 
+> **Status v0.1.0** : implementation complete (350 tests, lint clean, 22 fixes from validation Phase 6).
+> 🟡 Awaiting live smoke test in Cowork with real credentials avant publication.
+> Pour reprendre le travail : voir [`STATUS.md`](STATUS.md). Historique des releases : [`CHANGELOG.md`](CHANGELOG.md).
+
 ## Couverture
 
 **60 commandes** réparties sur les 2 plateformes Batch :

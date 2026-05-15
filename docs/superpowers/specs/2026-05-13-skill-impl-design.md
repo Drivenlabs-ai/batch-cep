@@ -1,10 +1,14 @@
 # batch-cep Skill — Implementation Design
 
-**Status:** Draft, ready for review
+**Status:** ✅ **Implemented in v0.1.0** (2026-05-15). Validation Phase 6 complete with 22 fixes applied. Awaiting live smoke test in Cowork.
 **Author:** Alex Bouchez + Claude
-**Date:** 2026-05-13
+**Date:** 2026-05-13 (spec drafted) → 2026-05-15 (impl shipped)
 **Plugin location:** `/Users/alexandrebouchez/Code/driven-alex-plugins/batch-cep/`
-**Reference (MCP server, source of truth for Batch API surface):** `/Users/alexandrebouchez/Code/batch-mcp/` (Phase 1-3 TypeScript, 318 specs, 60 tools)
+**Current state & next steps:** see [`STATUS.md`](../../../STATUS.md)
+**Release history:** see [`CHANGELOG.md`](../../../CHANGELOG.md)
+**Reference (MCP server, source of truth for Batch API surface):** [`alexandrebouchez/batch-mcp`](https://github.com/alexandrebouchez/batch-mcp) (archived — TypeScript MCP Phase 1-3, 318 specs, 60 tools)
+
+> **Note** : Cette spec a servi de blueprint pour l'implémentation. Les ~31 tasks du §11 ont toutes été exécutées via subagent-driven development. Tests target : 329 → réalité : 350 (sur-couverture due aux tests additionnels pour les fixes Phase 6). Pour les déviations finales vs spec et les choix faits en cours d'impl, voir le CHANGELOG.
 
 ---
 
