@@ -37,7 +37,7 @@ Wrap direct de l'API Batch via fetch Node — pas de MCP server, pas d'OAuth, pa
 ### Cible : Claude Code
 
 ```bash
-claude plugin marketplace add alexandrebouchez/driven-alex-plugins
+claude plugin marketplace add alexbouchez/driven-alex-plugins
 claude plugin install batch-cep@driven-alex-plugins
 ```
 
@@ -109,7 +109,7 @@ batch-cep/
 
 ## Versioning
 
-- v0.1.0 (en cours) — port from MCP server reference (`alexandrebouchez/batch-mcp` repo)
+- v0.1.0 (en cours) — port from MCP server reference (`alexbouchez/batch-mcp` repo)
 
 ## Licence
 

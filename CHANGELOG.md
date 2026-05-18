@@ -97,4 +97,4 @@ Premier port complet de l'API Batch.com (Customer Engagement Platform v2.11 + Mo
 
 ### Build from
 
-Ported from [`alexandrebouchez/batch-mcp`](https://github.com/alexandrebouchez/batch-mcp) (archived) — TypeScript MCP server (60 tools, 318 specs) which served as the API surface modeling reference.
+Ported from [`alexbouchez/batch-mcp`](https://github.com/alexbouchez/batch-mcp) (archived) — TypeScript MCP server (60 tools, 318 specs) which served as the API surface modeling reference.

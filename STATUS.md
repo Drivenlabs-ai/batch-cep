@@ -15,7 +15,7 @@
 **Pattern** : router SKILL.md (style impeccable) + scripts `.mjs` standalone (style Dougs) + references markdown chargés on-demand (Anthropic Agent Skills format).
 
 **Distribution** :
-- Claude Code users : `claude plugin marketplace add alexandrebouchez/driven-alex-plugins` puis `claude plugin install batch-cep@driven-alex-plugins`
+- Claude Code users : `claude plugin marketplace add alexbouchez/driven-alex-plugins` puis `claude plugin install batch-cep@driven-alex-plugins`
 - Cowork users : zip `skills/batch-cep/` → upload Settings > Skills
 
 **Cible primaire** : Knowledge workers Claude Cowork (CEOs PME, marketing, growth) — non-tech users qui chattent en langage naturel.
@@ -161,7 +161,7 @@ Probable que 1-3 ajustements émergent (paths, error format, args parsing). À d
 4. Vérifier qu'aucune dépendance critique n'a breaking change (vitest, biome)
 
 ### Si on doit re-bootstrap from scratch
-Le repo `batch-mcp` archivé (`https://github.com/alexandrebouchez/batch-mcp`) reste la référence d'architecture MCP. Le skill `batch-cep` est porté à partir de ce code TypeScript. Si on doit re-créer un MCP server, le port reverse est faisable (`.mjs` → `.ts` + MCP SDK).
+Le repo `batch-mcp` archivé (`https://github.com/alexbouchez/batch-mcp`) reste la référence d'architecture MCP. Le skill `batch-cep` est porté à partir de ce code TypeScript. Si on doit re-créer un MCP server, le port reverse est faisable (`.mjs` → `.ts` + MCP SDK).
 
 ---
 
@@ -221,8 +221,8 @@ node skills/batch-cep/bin/batch.mjs audiences list
 
 ## Liens
 
-- **Repo actif** : https://github.com/alexandrebouchez/driven-alex-plugins (master)
-- **Repo archivé (référence MCP)** : https://github.com/alexandrebouchez/batch-mcp
+- **Repo actif** : https://github.com/alexbouchez/driven-alex-plugins (master)
+- **Repo archivé (référence MCP)** : https://github.com/alexbouchez/batch-mcp
 - **Batch API docs** : https://doc.batch.com
 - **Anthropic Skills doc** : https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview
 - **Claude Cowork product** : https://claude.com/product/cowork

@@ -3,10 +3,10 @@
 **Status:** ✅ **Implemented in v0.1.0** (2026-05-15). Validation Phase 6 complete with 22 fixes applied. Awaiting live smoke test in Cowork.
 **Author:** Alex Bouchez + Claude
 **Date:** 2026-05-13 (spec drafted) → 2026-05-15 (impl shipped)
-**Plugin location:** `/Users/alexandrebouchez/Code/driven-alex-plugins/batch-cep/`
+**Plugin location:** `/Users/alexbouchez/Code/driven-alex-plugins/batch-cep/`
 **Current state & next steps:** see [`STATUS.md`](../../../STATUS.md)
 **Release history:** see [`CHANGELOG.md`](../../../CHANGELOG.md)
-**Reference (MCP server, source of truth for Batch API surface):** [`alexandrebouchez/batch-mcp`](https://github.com/alexandrebouchez/batch-mcp) (archived — TypeScript MCP Phase 1-3, 318 specs, 60 tools)
+**Reference (MCP server, source of truth for Batch API surface):** [`alexbouchez/batch-mcp`](https://github.com/alexbouchez/batch-mcp) (archived — TypeScript MCP Phase 1-3, 318 specs, 60 tools)
 
 > **Note** : Cette spec a servi de blueprint pour l'implémentation. Les ~31 tasks du §11 ont toutes été exécutées via subagent-driven development. Tests target : 329 → réalité : 350 (sur-couverture due aux tests additionnels pour les fixes Phase 6). Pour les déviations finales vs spec et les choix faits en cours d'impl, voir le CHANGELOG.
 
@@ -16,7 +16,7 @@
 
 `batch-cep` is a Claude skill that wraps the Batch.com REST API (CEP v2.11 + MEP v1.1) via direct `fetch()` calls in Node.js. It exposes **60 commands** to Claude through a router pattern in `SKILL.md`, with each command backed by a small `.mjs` script that handles auth, HTTP, error mapping, and stdout JSON output.
 
-The skill targets **Claude Cowork** (knowledge workers, non-tech) as primary surface, with secondary distribution via Claude Code plugin marketplace through `alexandrebouchez/driven-alex-plugins`. No MCP server, no OAuth, no SaaS — user credentials live locally in `${PROJECT_FOLDER}/batch-credentials.json` (per-customer pattern recommended by Batch).
+The skill targets **Claude Cowork** (knowledge workers, non-tech) as primary surface, with secondary distribution via Claude Code plugin marketplace through `alexbouchez/driven-alex-plugins`. No MCP server, no OAuth, no SaaS — user credentials live locally in `${PROJECT_FOLDER}/batch-credentials.json` (per-customer pattern recommended by Batch).
 
 The 60-command surface was modeled and tested during Phase 1-3 as a TypeScript MCP server in the `batch-mcp` repository (318 Vitest specs). Phase 5 ports that work to standalone `.mjs` scripts. **The Batch API surface, schema decisions, error patterns, and async semantics from Phase 1-3 are the source of truth — we port, we don't redesign.**
 
