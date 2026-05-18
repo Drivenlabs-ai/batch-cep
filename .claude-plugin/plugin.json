@@ -2,6 +2,10 @@
   "name": "batch-cep",
   "version": "0.1.0",
   "description": "Orchestre Batch.com (CEP + MEP) en langage naturel — profils, audiences, campagnes omnichannel, catalogues, transactional push, in-app, custom data, GDPR, exports via fetch direct.",
-  "author": { "name": "Alexandre Bouchez" },
-  "skills": "./skills/"
+  "author": {
+    "name": "Drivenlabs",
+    "url": "https://drivenlabs.ai"
+  },
+  "homepage": "https://github.com/drivenlabs-ai/batch-cep",
+  "repository": "https://github.com/drivenlabs-ai/batch-cep"
 }
