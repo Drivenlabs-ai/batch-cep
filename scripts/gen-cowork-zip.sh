@@ -1,17 +1,18 @@
 #!/usr/bin/env bash
-# gen-cowork-zip — build a Cowork-ready ZIP for this plugin
+# gen-cowork-zip — build a Cowork-ready ZIP for the plugin in this repo
 #
-# Output : ~/Downloads/driven-v<version>.zip
+# Output : ~/Downloads/<plugin>-v<version>.zip
 #
 # Cowork (Org Settings → Plugins → Add plugins → Upload a file) attend une ZIP
 # au format marketplace mono-plugin :
-#   ZIP/.claude-plugin/marketplace.json   (source: "./driven")
-#   ZIP/driven/.claude-plugin/plugin.json
-#   ZIP/driven/skills/, commands/, etc.
+#   ZIP/.claude-plugin/marketplace.json   (source: "./<plugin>")
+#   ZIP/<plugin>/.claude-plugin/plugin.json
+#   ZIP/<plugin>/skills/, commands/, etc.
 #
-# Le repo GitHub lui utilise source: "./" (plugin au root du repo). Le ZIP a
-# une structure légèrement différente parce que Cowork upload veut le pattern
-# subfolder. Le script gère la conversion automatiquement.
+# Le repo GitHub lui utilise source: "./" (plugin au root du repo). Le ZIP
+# inverse la convention parce que Cowork upload veut le pattern subfolder.
+# Le owner du marketplace embedded est lu depuis plugin.json (author.name /
+# author.url) — le script marche pour n'importe quel plugin sans modif.
 
 set -euo pipefail
 
@@ -49,15 +50,20 @@ rsync -a \
   --exclude='.claude-plugin/marketplace.json' \
   "$REPO_ROOT/" "$BUILD/$PLUGIN/"
 
-DESCRIPTION="$(python3 -c "import json; print(json.load(open('$PLUGIN_JSON')).get('description',''))")"
-python3 - "$BUILD" "$PLUGIN" "$VERSION" "$DESCRIPTION" <<'PY'
+python3 - "$BUILD" "$PLUGIN_JSON" "$PLUGIN" "$VERSION" <<'PY'
 import json, sys
-build, plugin, version, description = sys.argv[1:5]
+build, plugin_json_path, plugin, version = sys.argv[1:5]
+pj = json.load(open(plugin_json_path))
+author = pj.get("author", {}) or {}
+description = pj.get("description", f"Cowork upload bundle for {plugin}.")
+owner = {"name": author.get("name", "Unknown")}
+if author.get("url"):
+    owner["url"] = author["url"]
 manifest = {
     "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
     "name": f"{plugin}-cowork",
     "description": f"Cowork upload bundle for {plugin}.",
-    "owner": {"name": "Drivenlabs", "url": "https://drivenlabs.ai"},
+    "owner": owner,
     "plugins": [{
         "name": plugin,
         "description": description,

@@ -10,12 +10,12 @@
 
 ## Quick context — où on en est
 
-`batch-cep` est un Claude skill qui wrap l'API Batch.com (CEP v2.11 + MEP v1.1) en 60 commandes invoquables en langage naturel ("liste mes audiences batch", "envoie une push de bienvenue à u_42"). Il vit dans le marketplace privé `driven-alex-plugins/`.
+`batch-cep` est un Claude skill qui wrap l'API Batch.com (CEP v2.11 + MEP v1.1) en 60 commandes invoquables en langage naturel ("liste mes audiences batch", "envoie une push de bienvenue à u_42"). Il vit dans le marketplace privé `drivenlabs-ai marketplace/`.
 
 **Pattern** : router SKILL.md (style impeccable) + scripts `.mjs` standalone (style Dougs) + references markdown chargés on-demand (Anthropic Agent Skills format).
 
 **Distribution** :
-- Claude Code users : `claude plugin marketplace add alexbouchez/driven-alex-plugins` puis `claude plugin install batch-cep@driven-alex-plugins`
+- Claude Code users : `claude plugin marketplace add drivenlabs-ai/batch-cep` puis `claude plugin install batch-cep@drivenlabs-ai marketplace`
 - Cowork users : zip `skills/batch-cep/` → upload Settings > Skills
 
 **Cible primaire** : Knowledge workers Claude Cowork (CEOs PME, marketing, growth) — non-tech users qui chattent en langage naturel.
@@ -42,10 +42,10 @@
 - 7 nice-to-have (cross-platform fanout, campaign targeting audiences, A/B pattern, audience per-call limits, personalization templating, plugin limits section, deeplink in mep/campaigns)
 
 ### Distribution
-- Marketplace entry dans `driven-alex-plugins/.claude-plugin/marketplace.json`
+- Marketplace entry dans `drivenlabs-ai marketplace/.claude-plugin/marketplace.json`
 - README plugin avec install instructions
 - LICENSE AGPL-3.0 à la racine du plugin
-- Push public : tous les commits sur `origin/master` de `driven-alex-plugins`
+- Push public : tous les commits sur `origin/master` de `drivenlabs-ai marketplace`
 
 ### Decisions log (les choix clés)
 
@@ -90,7 +90,7 @@ Le code TypeScript reste accessible dans le repo archivé `batch-mcp` comme réf
 LE seul truc qui n'est PAS validé. Le plugin marche en tests mockés (350 tests vert) mais aucun call réel vers `api.batch.com` n'a été fait depuis le sandbox Cowork.
 
 Procédure suggérée (~30 min) :
-1. Zip le skill : `cd ~/Code/driven-alex-plugins/batch-cep && zip -r ~/Downloads/batch-cep.zip skills/batch-cep/`
+1. Zip le skill : `cd ~/Code/drivenlabs-ai marketplace/batch-cep && zip -r ~/Downloads/batch-cep.zip skills/batch-cep/`
 2. Cowork : Settings > Skills > "+ Create skill" > Upload `batch-cep.zip`
 3. Dans une nouvelle conversation Cowork, créer un Project "Batch test"
 4. Demander : "Configure mes credentials Batch" → vérifier le first-run setup auto
@@ -116,7 +116,7 @@ Probable que 1-3 ajustements émergent (paths, error format, args parsing). À d
 ### 🟡 IMPORTANT — Avant ouverture publique
 
 **3. GitHub Release v0.1.0 propre**
-- Tag `batch-cep-v0.1.0` sur driven-alex-plugins
+- Tag `batch-cep-v0.1.0` sur drivenlabs-ai marketplace
 - Release notes (depuis le CHANGELOG.md)
 - Asset `.zip` pré-buildé pour Cowork (au lieu que les users clonent + zippent)
 
@@ -201,7 +201,7 @@ batch-cep/
 
 ```bash
 # Run tests
-cd ~/Code/driven-alex-plugins/batch-cep
+cd ~/Code/drivenlabs-ai marketplace/batch-cep
 npx vitest run
 
 # Lint
@@ -221,7 +221,7 @@ node skills/batch-cep/bin/batch.mjs audiences list
 
 ## Liens
 
-- **Repo actif** : https://github.com/alexbouchez/driven-alex-plugins (master)
+- **Repo actif** : https://github.com/drivenlabs-ai/batch-cep (master)
 - **Repo archivé (référence MCP)** : https://github.com/alexbouchez/batch-mcp
 - **Batch API docs** : https://doc.batch.com
 - **Anthropic Skills doc** : https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview

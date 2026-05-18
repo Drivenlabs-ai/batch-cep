@@ -37,16 +37,20 @@ Wrap direct de l'API Batch via fetch Node — pas de MCP server, pas d'OAuth, pa
 ### Cible : Claude Code
 
 ```bash
-claude plugin marketplace add alexbouchez/driven-alex-plugins
-claude plugin install batch-cep@driven-alex-plugins
+/plugin marketplace add drivenlabs-ai/plugins
+/plugin install batch-cep@drivenlabs-ai
 ```
 
-### Cible : Claude Cowork / Claude.ai (Pro/Team/Enterprise)
+### Cible : Claude Cowork
 
-Télécharger `skills/batch-cep.zip` depuis la dernière release GitHub, puis :
+Générer le ZIP depuis ce repo :
 
-1. Dans Cowork : `Customize > Skills > "+ Create skill" > Upload a skill`
-2. Sélectionner le `.zip` téléchargé
+```bash
+./scripts/gen-cowork-zip.sh
+# → ~/Downloads/batch-cep-v<version>.zip
+```
+
+Puis dans Cowork : `Org Settings > Plugins > Add plugins > Upload a file` → sélectionner le ZIP.
 
 ## First-run setup
 

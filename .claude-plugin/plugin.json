@@ -7,5 +7,7 @@
     "url": "https://drivenlabs.ai"
   },
   "homepage": "https://github.com/drivenlabs-ai/batch-cep",
-  "repository": "https://github.com/drivenlabs-ai/batch-cep"
+  "repository": "https://github.com/drivenlabs-ai/batch-cep",
+  "license": "AGPL-3.0-only",
+  "keywords": ["batch", "batch.com", "cep", "mep", "push-notifications", "campaigns", "customer-engagement", "drivenlabs"]
 }
